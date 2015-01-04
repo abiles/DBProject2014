@@ -6,23 +6,37 @@ className : DBManager.h
 
 
 */
+#pragma once
+
 #include <sql.h>
 #include <sqlext.h>
+
+#define GET_DBMANAGER() DBManager::getInstance()
 
 class DBManager
 {
 public:
-	DBManager();
-	~DBManager();
 
-	bool			connectToDB();
 
-	bool			iSInputIDExist(const char* inputId);
-	void			freeHandles();
+	static DBManager* getInstance();
+	static void		  releaseInstance();
+	
+	bool			  connectToDB();
+	void			  freeHandles();
+
+	bool			  isInputIDExist(const SQLWCHAR* inputId);
+	bool			  resisterNewUserId(const SQLWCHAR* inputId);
+
+	
 
 private:
-	SQLHENV		m_HEnv = nullptr;
-	SQLHDBC		m_HDbc = nullptr;
-	SQLHSTMT	m_HStmt = nullptr;
-};
+	static DBManager* m_DBManager;
+	SQLHENV		      m_HEnv = nullptr;
+	SQLHDBC		      m_HDbc = nullptr;
+	SQLHSTMT	      m_HStmt = nullptr;
+
+	DBManager();
+	~DBManager();
+};   
+
 

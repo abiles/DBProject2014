@@ -1,73 +1,43 @@
 #include "pch.h"
 #include "ClassManage.h"
 #include "DBManager.h"
+#include "util.h"
 
 
 USING_NS_CC;
 
 Scene* ClassManage::createScene()
 {
-
-    // 'scene' is an autorelease object
-    auto scene = Scene::create();
-    
-    // 'layer' is an autorelease object
-    auto layer = ClassManage::create();
-
-    // add layer as a child to scene
-    scene->addChild(layer);
-
-    // return the scene
-    return scene;
+	auto scene = Scene::create();
+	auto layer = ClassManage::create();
+	scene->addChild(layer);
+	return scene;
 }
 
-// on "init" you need to initialize your instance
 bool ClassManage::init()
 {
-    //////////////////////////////
-    // 1. super init first
-    if ( !Layer::init() )
-    {
-        return false;
-    }
-
-	DBManager* m_DBManager = new DBManager();
-	if (!m_DBManager->connectToDB())
+	if ( !Layer::init() )
+	{
 		return false;
-    
-    m_VisibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	}
 
-	auto label = Label::createWithTTF("ClassManageMent", "fonts/Marker Felt.ttf", 40);
+	//DB 연결
+	if (!GET_DBMANAGER()->connectToDB())
+		return false;
+	wmemset(m_UserId, 0, sizeof(m_UserId));
+	
+	//크기 구해놓기
+	m_VisibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	label->setPosition(Vec2(origin.x + m_VisibleSize.width / 2,
-		origin.y + m_VisibleSize.height - label->getContentSize().height));
+	initLabels();
 
-	this->addChild(label, 1);
-
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-										   CC_CALLBACK_1(ClassManage::menuCloseCallback, this));
-    
-	closeItem->setPosition(Vec2(origin.x + m_VisibleSize.width - closeItem->getContentSize().width/2 ,
-                                origin.y + closeItem->getContentSize().height/2));
-
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
-
+	//ID 받는 부분
 	m_EditBox = ui::EditBox::create(Size(300, 100), "SpriteToolEditBox.png");
 	editBoxInit();
-	this->addChild(m_EditBox, 1);
+	this->addChild(m_EditBox, FISRT_LAYER);
 
-	/*auto nameInput = LabelTTF::create("inputID", "Calibri", 24);
-	Point nameInputPos = Point(200, 200);
-	nameInput->setPosition(nameInputPos);
-	this->addChild(nameInput, 1);
-	*/
- 
-    return true;
+	return true;
 }
 
 
@@ -75,23 +45,16 @@ void ClassManage::menuCloseCallback(Ref* pSender)
 {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
 	MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
-    return;
+	return;
 #endif
 
-    Director::getInstance()->end();
+	Director::getInstance()->end();
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
+	exit(0);
 #endif
 }
 
-ClassManage::~ClassManage()
-{
-	if (m_DBManager)
-	{
-		delete m_DBManager;
-	}
-}
 
 void ClassManage::editBoxInit()
 {
@@ -112,49 +75,100 @@ void ClassManage::editBoxReturn(cocos2d::ui::EditBox* editBox)
 	if (!editBox)
 		return;
 
-	m_UserId = editBox->getText();
-	if (m_DBManager->iSInputIDExist(m_UserId))
+	const char* tmpText = editBox->getText();
+	int len = strlen(tmpText);
+	MultiByteToWideChar(0,0, tmpText, len + 1, m_UserId, len + 1);
+
+	if (GET_DBMANAGER()->isInputIDExist(m_UserId))
 	{
+		m_FirstToSecondMenu->setVisible(true);
 		return;
 	}
 	else
 	{
+		//존재하지 않는 ID일 때
+		m_FirstToSecondMenu->setVisible(false);
+		m_ResisterInfoLabel->setVisible(true);
+		m_ResistrationMenu->setVisible(true);
 		return;
 	}
 }
 
-void ClassManage::editBoxEditingDidBegin(cocos2d::ui::EditBox* editBox)
+void ClassManage::resisterMenuEvent(cocos2d::Ref* pSender)
 {
-	if (!editBox)
-		return;
+	m_ResisterResultLabel->setVisible(true);
+	m_ResisterInfoLabel->setVisible(false);
+	//userid를 등록하면 된다. 
+	if (GET_DBMANAGER()->resisterNewUserId(m_UserId))
+	{
+		m_ResisterResultLabel->setString("resister Success!");
+		m_ResistrationMenu->setVisible(false);
+		m_FirstToSecondMenu->setVisible(true);
+	}
+	else
+	{
+		m_ResisterResultLabel->setString("resister Fail!");
+		m_FirstToSecondMenu->setVisible(false);
+
+
+	}
+	//등록되었다면 다음 화면으로 넘어가기 
 }
 
-void ClassManage::editBoxEditingDidEnd(cocos2d::ui::EditBox* editBox)
+void ClassManage::initLabels()
 {
-	if (!editBox)
-		return;
+	//종료 버튼
+	auto closeItem = MenuItemImage::create(
+		"CloseNormal.png",
+		"CloseSelected.png",
+		CC_CALLBACK_1(ClassManage::menuCloseCallback, this));
+
+	closeItem->setPosition(Vec2( m_VisibleSize.width - closeItem->getContentSize().width / 2,
+		closeItem->getContentSize().height / 2));
+	auto menu = Menu::create(closeItem, NULL);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu, FISRT_LAYER);
+
+	//제목 라벨
+	auto label = Label::createWithTTF("ClassManageMent", "fonts/Marker Felt.ttf", 40);
+	label->setPosition(Vec2(m_VisibleSize.width / 2,
+		m_VisibleSize.height - label->getContentSize().height));
+	this->addChild(label, FISRT_LAYER);
+
+	//등록해야되는지 알려주는 라벨
+	m_ResisterInfoLabel = Label::createWithSystemFont("ID does not exist, resistration First", "Calbri", 20);
+	m_ResisterInfoLabel->setPosition(Point(m_VisibleSize.width / 2, 220));
+	this->addChild(m_ResisterInfoLabel, FISRT_LAYER);
+	m_ResisterInfoLabel->setVisible(false);
+
+	//등록결과 라벨
+	m_ResisterResultLabel = Label::create();
+	m_ResisterResultLabel->setSystemFontSize(20);
+	m_ResisterResultLabel->setPosition(Point(m_VisibleSize.width / 2, 220));
+	this->addChild(m_ResisterResultLabel, FISRT_LAYER);
+	m_ResisterResultLabel->setVisible(false);
+
+	//등록 메뉴
+	auto resisterMenu = MenuItemImage::create("resisterButton.png",
+											  "resisterButtonPress.png",
+											  CC_CALLBACK_1(ClassManage::resisterMenuEvent, this));
+	resisterMenu->setPosition(Point(m_VisibleSize.width / 2, 130));
+	m_ResistrationMenu = Menu::create(resisterMenu, NULL);
+	m_ResistrationMenu->setPosition(Point::ZERO);
+	this->addChild(m_ResistrationMenu, FISRT_LAYER);
+	m_ResistrationMenu->setVisible(false);
+
+	//1장에서 2장으로 넘어가는 메뉴
+	auto firstToSecondMenu = MenuItemImage::create("next.png", "nextPress.png",
+												   CC_CALLBACK_1(ClassManage::firstToSecondMenuEvent, this));
+	firstToSecondMenu->setPosition(Point(m_VisibleSize.width / 2, 130));
+	m_FirstToSecondMenu = Menu::create(firstToSecondMenu, NULL);
+	m_FirstToSecondMenu->setPosition(Point::ZERO);
+	this->addChild(m_FirstToSecondMenu, FISRT_LAYER);
+	m_FirstToSecondMenu->setVisible(false);
 }
 
-void ClassManage::editBoxTextChanged(cocos2d::ui::EditBox* editBox, const std::string& text)
+void ClassManage::firstToSecondMenuEvent(cocos2d::Ref* pSender)
 {
-	if (!editBox)
-		return;
+	//다음 레이어를 소환하는 메뉴!
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
