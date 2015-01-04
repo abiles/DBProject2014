@@ -57,9 +57,9 @@ bool ClassManage::init()
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 1);
 
-	auto inputEditBox = ui::EditBox::create(Size(300, 100), "SpriteToolEditBox.png");
-	editBoxInit(inputEditBox);
-	this->addChild(inputEditBox, 1);
+	m_EditBox = ui::EditBox::create(Size(300, 100), "SpriteToolEditBox.png");
+	editBoxInit();
+	this->addChild(m_EditBox, 1);
 
 	/*auto nameInput = LabelTTF::create("inputID", "Calibri", 24);
 	Point nameInputPos = Point(200, 200);
@@ -93,22 +93,68 @@ ClassManage::~ClassManage()
 	}
 }
 
-void ClassManage::editBoxInit(ui::EditBox* inputEditBox)
+void ClassManage::editBoxInit()
 {
-	inputEditBox->setPosition(Point(m_VisibleSize.width/ 2, m_VisibleSize.height / 2));
-	inputEditBox->setFont("Calbri", 24);
-	inputEditBox->setFontColor(Color3B::YELLOW);
-	inputEditBox->setPlaceHolder("Input Your ID");
-	inputEditBox->setPlaceholderFontName("Calbri");
-	inputEditBox->setPlaceholderFontColor(Color3B::YELLOW);
-	inputEditBox->setMaxLength(6);
-	inputEditBox->setReturnType(ui::EditBox::KeyboardReturnType::DONE);
+	m_EditBox->setPosition(Point(m_VisibleSize.width/ 2, m_VisibleSize.height / 2));
+	m_EditBox->setFont("Calbri", 24);
+	m_EditBox->setFontColor(Color3B::YELLOW);
+	m_EditBox->setPlaceHolder("Input Your ID");
+	m_EditBox->setPlaceholderFontName("Calbri");
+	m_EditBox->setPlaceholderFontColor(Color3B::YELLOW);
+	m_EditBox->setMaxLength(6);
+	m_EditBox->setReturnType(ui::EditBox::KeyboardReturnType::DONE);
+	m_EditBox->setDelegate(this);
+	
 }
 
 void ClassManage::editBoxReturn(cocos2d::ui::EditBox* editBox)
 {
 	if (!editBox)
 		return;
-	
+
 	m_UserId = editBox->getText();
+	if (m_DBManager->iSInputIDExist(m_UserId))
+	{
+		return;
+	}
+	else
+	{
+		return;
+	}
 }
+
+void ClassManage::editBoxEditingDidBegin(cocos2d::ui::EditBox* editBox)
+{
+	if (!editBox)
+		return;
+}
+
+void ClassManage::editBoxEditingDidEnd(cocos2d::ui::EditBox* editBox)
+{
+	if (!editBox)
+		return;
+}
+
+void ClassManage::editBoxTextChanged(cocos2d::ui::EditBox* editBox, const std::string& text)
+{
+	if (!editBox)
+		return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

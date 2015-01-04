@@ -16,6 +16,8 @@ public:
 	~DBManager();
 
 	bool			connectToDB();
+
+	bool			iSInputIDExist(const char* inputId);
 	void			freeHandles();
 
 private:

@@ -41,6 +41,10 @@ bool DBManager::connectToDB()
 	
 	if (SQLAllocHandle(SQL_HANDLE_STMT, m_HDbc, &m_HStmt) != SQL_SUCCESS)
 		return false;
+
+	SQLWCHAR query[300] = { 0, };
+	wsprintf(query, L"use classproject");
+	SQLExecDirect(m_HStmt, query, SQL_NTS);
 	
 	return true;
 }
@@ -51,6 +55,22 @@ void DBManager::freeHandles()
 	if (m_HDbc) SQLDisconnect(m_HDbc);
 	if (m_HDbc) SQLFreeHandle(SQL_HANDLE_DBC, m_HDbc);
 	if (m_HEnv) SQLFreeHandle(SQL_HANDLE_ENV, m_HEnv);
+}
+
+bool DBManager::iSInputIDExist(const char* inputId)
+{
+	if (inputId == nullptr)
+		return false;
+	int ret = 0;
+	SQLWCHAR query[300] = { 0, };
+
+	wsprintf(query, L"select studentId From student WHERE studentId = %s", inputId);
+	ret = SQLExecDirect(m_HStmt, query, SQL_NTS);
+
+	if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)
+		return true;
+	else
+		return false;
 }
 
 
