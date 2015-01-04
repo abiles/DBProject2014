@@ -4,13 +4,20 @@
 # User-specific files
 *.suo
 *.user
-*.sln.docstates
+*.vcxproj.filters
 
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+[Pp]roj.android/
+[Pp]roj.ios_mac/
+[Pp]roj.linux/
+[Pp]roj.wp8-xaml/
+[Dd]ebug.win32/
+[Dd]ebugPublic/
+[Rr]elease.win32/
 x64/
 x86/
 build/
