@@ -4,6 +4,9 @@
 
 USING_NS_CC;
 
+#define WINSIZE_WIDTH 1024
+#define WINSIZE_HEIGHT 576
+
 AppDelegate::AppDelegate() {
 
 }
@@ -28,7 +31,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
-        glview = GLViewImpl::create("My Game");
+        glview = GLViewImpl::createWithRect("ClassManagement", 
+											cocos2d::Rect(0, 0, WINSIZE_WIDTH, WINSIZE_HEIGHT));
         director->setOpenGLView(glview);
     }
 
@@ -47,18 +51,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
     return true;
 }
 
-// This function will be called when the app is inactive. When comes a phone call,it's be invoked too
-void AppDelegate::applicationDidEnterBackground() {
-    Director::getInstance()->stopAnimation();
-
-    // if you use SimpleAudioEngine, it must be pause
-    // SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+void AppDelegate::applicationDidEnterBackground()
+{
 }
 
-// this function will be called when the app is active again
-void AppDelegate::applicationWillEnterForeground() {
-    Director::getInstance()->startAnimation();
-
-    // if you use SimpleAudioEngine, it must resume here
-    // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+void AppDelegate::applicationWillEnterForeground()
+{
 }
+
+
+
