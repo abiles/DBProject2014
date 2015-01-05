@@ -44,10 +44,13 @@ bool InfoLayer::init()
 	//모든 과목에서 뒤로가기 버튼
 	auto allCourseBack = MenuItemImage::create("Back.png", "Back.png",
 											   CC_CALLBACK_1(InfoLayer::allCourseBackEvent, this));
-	back->setPosition(Point(WINSIZE_WIDTH - back->getContentSize().width / 2, 50));
+	allCourseBack->setAnchorPoint(Point::ZERO);
+	allCourseBack->setPosition(Point(WINSIZE_WIDTH, 0));
 	m_AllCourseBackMenu = Menu::create(allCourseBack, NULL);
 	m_AllCourseBackMenu->setPosition(Point::ZERO);
-	this->addChild(m_BackMenu, 1);
+	this->addChild(m_AllCourseBackMenu, 1);
+	m_AllCourseBackMenu->setVisible(false);
+	m_AllCourseBackMenu->setScale(0.7f);
 
 	return true;
 }
@@ -68,36 +71,62 @@ void InfoLayer::showAllCourseEvent(cocos2d::Ref* sender)
 	int count = 0;
 	int spaceY = 30;
 	Point firstPos;
-	firstPos.x = WINSIZE_WIDTH/2;
-	firstPos.y = WINSIZE_HEIGHT - 150;
-	
+	firstPos.x = WINSIZE_WIDTH/3;
+	firstPos.y = WINSIZE_HEIGHT - 20;
+
+	Label* idLabel = Label::createWithSystemFont("ID", "noto sans korean bold", 20);
+	Label* courseLabel = Label::createWithSystemFont("Course", "noto sans korean bold", 20);
+	Label* yearLabel = Label::createWithSystemFont("Year", "noto sans korean bold", 20);
+	Label* semesterLabel = Label::createWithSystemFont("학기", "noto sans korean bold", 20);
+
+	idLabel->setAnchorPoint(Point::ZERO);
+	courseLabel->setAnchorPoint(Point::ZERO);
+	yearLabel->setAnchorPoint(Point::ZERO);
+	semesterLabel->setAnchorPoint(Point::ZERO);
+
+	this->addChild(idLabel);
+	this->addChild(courseLabel);
+	this->addChild(yearLabel);
+	this->addChild(semesterLabel);
+
+	m_AllCourseLabel.push_back(idLabel);
+	m_AllCourseLabel.push_back(courseLabel);
+	m_AllCourseLabel.push_back(yearLabel);
+	m_AllCourseLabel.push_back(semesterLabel);
+
+
 	while (getline(ss, token, ','))
 	{
-		Label* tmpLabel = Label::createWithSystemFont(token, "Calbri", 25);
+		Label* tmpLabel = Label::createWithSystemFont(token, "noto sans korean bold", 20);
 		tmpLabel->setAnchorPoint(Point::ZERO);
 		this->addChild(tmpLabel);
 		m_AllCourseLabel.push_back(tmpLabel);
 		
+	}
+
+	for (auto pLabel : m_AllCourseLabel)
+	{
+
 		if (count % 4 == 0)
 		{
-			firstPos.x = WINSIZE_WIDTH/3;
+			firstPos.x = WINSIZE_WIDTH / 3;
 			firstPos.y -= spaceY;
-			tmpLabel->setPosition(firstPos.x, firstPos.y);
+			pLabel->setPosition(firstPos.x, firstPos.y);
 		}
 		else if (count % 4 == 1)
 		{
 			firstPos.x += 40;
-			tmpLabel->setPosition(firstPos.x, firstPos.y);
+			pLabel->setPosition(firstPos.x, firstPos.y);
 		}
 		else if (count % 4 == 2)
 		{
 			firstPos.x += 200;
-			tmpLabel->setPosition(firstPos.x, firstPos.y);
+			pLabel->setPosition(firstPos.x, firstPos.y);
 		}
 		else
 		{
 			firstPos.x += 100;
-			tmpLabel->setPosition(firstPos.x, firstPos.y);
+			pLabel->setPosition(firstPos.x, firstPos.y);
 		}
 		++count;
 	}
@@ -124,4 +153,8 @@ void InfoLayer::allCourseBackEvent(cocos2d::Ref* sender)
 	}
 
 	m_AllCourseBackMenu->setVisible(false);
+
+	m_BackMenu->setVisible(true);
+	m_MyCourseMenu->setVisible(true);
+	m_AllCourseMenu->setVisible(true);
 }
