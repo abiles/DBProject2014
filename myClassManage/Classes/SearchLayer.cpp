@@ -78,7 +78,7 @@ void SearchLayer::editBoxReturn(cocos2d::ui::EditBox* editBox)
 
 	int len = strlen(tmpText);
 	MultiByteToWideChar(CP_UTF8, 0, tmpText, len + 1, searchInput, len + 1);
-	//const char* charForSetText = 
+
 	char tmpMultiChar[100] = { 0, };
 	WideCharToMultiByte(CP_ACP, 0, searchInput, -1, tmpMultiChar, 100, 0, 0);
 	editBox->setText(tmpMultiChar);
