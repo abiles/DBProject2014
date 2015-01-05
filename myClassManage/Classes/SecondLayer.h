@@ -3,6 +3,7 @@
 
 class InfoLayer;
 class SearchLayer;
+class UpdateLayer;
 class SecondLayer : public cocos2d::LayerColor
 {
 public:
@@ -21,5 +22,6 @@ private:
 	cocos2d::Menu*		  m_BackMenu = nullptr;
 	InfoLayer*			  m_InfoLayer = nullptr;
 	SearchLayer*		  m_SearchLayer = nullptr;
+	UpdateLayer*		  m_UpdateLayer = nullptr;
 
 };

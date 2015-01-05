@@ -30,6 +30,12 @@ public:
 	bool			  loadUserCourseInfo(const SQLWCHAR* inputId, OUT std::string* courseInfo);
 	bool			  getContentsByCourseId(const SQLWCHAR* courseId, OUT std::string* courseInfo);
 	bool			  getInfoBySearchInput(const SQLWCHAR* searchInput, OUT std::string* courseInfo);
+	bool			  updateMyCourse(const SQLWCHAR* courseId);
+	bool			  deleteMyCourse(const SQLWCHAR* courseId);
+	bool			  addContents(const SQLWCHAR* courseId, const SQLWCHAR* courseWeek,
+								  const SQLWCHAR* courseIdx, const SQLWCHAR* courseSub);
+	bool			  deleteContents(const SQLWCHAR* courseId, const SQLWCHAR* courseWeek,
+									 const SQLWCHAR* courseIdx);
 	void			  setUserId(const SQLWCHAR* userId);
 	SQLWCHAR*		  getUserId();
 

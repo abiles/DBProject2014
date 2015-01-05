@@ -393,4 +393,95 @@ bool DBManager::getInfoBySearchInput(const SQLWCHAR* searchInput, OUT std::strin
 	return true;
 }
 
+bool DBManager::updateMyCourse(const SQLWCHAR* courseId)
+{
+	if (!courseId)
+		return false;
+
+	int ret = 0;
+	SQLWCHAR query[300] = { 0, };
+
+	SQLHSTMT hStmt = nullptr;
+	if (SQLAllocHandle(SQL_HANDLE_STMT, m_HDbc, &hStmt) != SQL_SUCCESS)
+		return false;
+
+	wsprintf(query, L"INSERT INTO student_resister_for_course VALUES(%s, %s)", m_UserId, courseId);
+	ret = SQLExecDirect(hStmt, query, SQL_NTS);
+
+	if (hStmt) SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
+
+
+	if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)
+		return true;
+	else
+		return false;
+}
+
+bool DBManager::deleteMyCourse(const SQLWCHAR* courseId)
+{
+	if (!courseId)
+		return false;
+
+	int ret = 0;
+	SQLWCHAR query[300] = { 0, };
+
+	SQLHSTMT hStmt = nullptr;
+	if (SQLAllocHandle(SQL_HANDLE_STMT, m_HDbc, &hStmt) != SQL_SUCCESS)
+		return false;
+
+	wsprintf(query, L"DELETE FROM student_resister_for_course "
+					L"WHERE Student_studentId = %s AND Course_courseId = %s", m_UserId, courseId);
+	ret = SQLExecDirect(hStmt, query, SQL_NTS);
+
+	if (hStmt) SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
+
+	if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)
+		return true;
+	else
+		return false;
+}
+
+bool DBManager::addContents(const SQLWCHAR* courseId, const SQLWCHAR* courseWeek,
+							const SQLWCHAR* courseIdx, const SQLWCHAR* courseSub)
+{
+	int ret = 0;
+	SQLWCHAR query[300] = { 0, };
+
+	SQLHSTMT hStmt = nullptr;
+	if (SQLAllocHandle(SQL_HANDLE_STMT, m_HDbc, &hStmt) != SQL_SUCCESS)
+		return false;
+
+	wsprintf(query, L"INSERT INTO content VALUES (%s, %s, %s, \"%s\")", 
+			 courseId, courseWeek, courseIdx, courseSub);
+	ret = SQLExecDirect(hStmt, query, SQL_NTS);
+
+	if (hStmt) SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
+
+	if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)
+		return true;
+	else
+		return false;
+}
+
+bool DBManager::deleteContents(const SQLWCHAR* courseId, const SQLWCHAR* courseWeek, const SQLWCHAR* courseIdx)
+{
+	int ret = 0;
+	SQLWCHAR query[300] = { 0, };
+	
+	SQLHSTMT hStmt = nullptr;
+	if (SQLAllocHandle(SQL_HANDLE_STMT, m_HDbc, &hStmt) != SQL_SUCCESS)
+		return false;
+
+	wsprintf(query, L"DELETE FROM content WHERE Course_CourseId = %s AND Week = %s AND contentsIdx = %s",
+			 courseId, courseWeek, courseIdx);
+	ret = SQLExecDirect(hStmt, query, SQL_NTS);
+
+	if (hStmt) SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
+
+	if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)
+		return true;
+	else
+		return false;
+}
+
 

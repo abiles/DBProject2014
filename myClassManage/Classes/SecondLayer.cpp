@@ -4,6 +4,7 @@
 #include "DBManager.h"
 #include "InfoLayer.h"
 #include "SearchLayer.h"
+#include "UpdateLayer.h"
 
 USING_NS_CC;
 
@@ -56,6 +57,13 @@ bool SecondLayer::init()
 	m_InfoLayer->setPosition(Point::ZERO);
 	m_InfoLayer->setVisible(false);
 
+	//updateLayer 등록
+	m_UpdateLayer = UpdateLayer::create();
+	m_UpdateLayer->setPosition(Point::ZERO);
+	this->addChild(m_UpdateLayer, 2);
+	m_UpdateLayer->setAnchorPoint(Point::ZERO);
+	m_UpdateLayer->setVisible(false);
+
 	//searchlayer 등록
 	m_SearchLayer = SearchLayer::create();
 	this->addChild(m_SearchLayer, 2);
@@ -76,7 +84,7 @@ void SecondLayer::showInfoMenuEvent(Ref* pSender)
 
 void SecondLayer::updateMenuEvent(Ref* pSender)
 {
-
+	m_UpdateLayer->setVisible(true);
 }
 
 void SecondLayer::searchMenuEvent(Ref* pSender)
