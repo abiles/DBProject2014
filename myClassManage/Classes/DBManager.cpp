@@ -259,7 +259,7 @@ bool DBManager::getContentsByCourseId(const SQLWCHAR* courseId, OUT std::string*
 	if (SQLAllocHandle(SQL_HANDLE_STMT, m_HDbc, &hStmt) != SQL_SUCCESS)
 		return false;
 
-	wsprintf(query, L"SELECT week, contentsIdx, substance FROM content WHERE Course_CourseId = %s)",courseId);
+	wsprintf(query, L"SELECT week, contentsIdx, substance FROM content WHERE Course_CourseId = %s",courseId);
 	ret = SQLExecDirect(hStmt, query, SQL_NTS);
 	if (ret == SQL_NO_DATA || ret == SQL_ERROR)
 		return false;
@@ -278,7 +278,7 @@ bool DBManager::getContentsByCourseId(const SQLWCHAR* courseId, OUT std::string*
 			return false;
 		if (SQLGetData(hStmt, 2, SQL_C_ULONG, &idx, 0, &iIdxLen) == SQL_ERROR)
 			return false;
-		if (SQLGetData(hStmt, 3, SQL_C_ULONG, substance, sizeof(substance), &iSubstanceLen) == SQL_ERROR)
+		if (SQLGetData(hStmt, 3, SQL_C_WCHAR, substance, sizeof(substance), &iSubstanceLen) == SQL_ERROR)
 			return false;
 
 		std::string weekStr = std::to_string(week);
@@ -302,6 +302,8 @@ bool DBManager::getContentsByCourseId(const SQLWCHAR* courseId, OUT std::string*
 	courseInfo->pop_back();
 
 	if (m_HStmt) SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
+
+	return true;
 }
 
 

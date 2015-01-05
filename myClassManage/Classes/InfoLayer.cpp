@@ -14,8 +14,9 @@ bool InfoLayer::init()
 
 	memset(m_CourseId, 0, sizeof(m_CourseId));
 	this->setContentSize(Size(WINSIZE_WIDTH, WINSIZE_HEIGHT));
-	m_AllCourseLabels.reserve(30);
-	m_MyCourseLabels.reserve(30);
+	m_AllCourseLabels.reserve(100);
+	m_MyCourseLabels.reserve(100);
+	m_CourseContentsLabels.reserve(300);
 
 	//모든 과목 보기 버튼 
 	auto allCourse = MenuItemImage::create("allCourse.png", "allCoursePress.png",
@@ -58,7 +59,6 @@ bool InfoLayer::init()
 	auto myCourseBack = MenuItemImage::create("Back.png", "Back.png",
 											   CC_CALLBACK_1(InfoLayer::myCourseBackEvent, this));
 	myCourseBack->setScale(0.7f);
-	myCourseBack->setAnchorPoint(Point::ZERO);
 	myCourseBack->setPosition(Point(WINSIZE_WIDTH - myCourseBack->getContentSize().width / 2, WINSIZE_HEIGHT / 8));
 	m_MyCourseBackMenu = Menu::create(myCourseBack, NULL);
 	m_MyCourseBackMenu->setPosition(Point::ZERO);
@@ -67,16 +67,17 @@ bool InfoLayer::init()
 
 	//과목 선택용 editbox
 	m_ChooseCourse = ui::EditBox::create(Size(300, 100), "SpriteToolEditBox.png");
+	m_ChooseCourse->setScale(0.5f);
 	editBoxInit();
 	this->addChild(m_ChooseCourse, 1);
 	m_ChooseCourse->setVisible(false);
 
 	//editbox Back
 	auto editBack = MenuItemImage::create("Back.png", "Back.png",
-											  CC_CALLBACK_1(InfoLayer::myCourseBackEvent, this));
+											  CC_CALLBACK_1(InfoLayer::editBoxBackEvent, this));
 	editBack->setScale(0.7f);
 	editBack->setAnchorPoint(Point::ZERO);
-	editBack->setPosition(Point(WINSIZE_WIDTH - editBack->getContentSize().width / 2, WINSIZE_HEIGHT / 8));
+	editBack->setPosition(Point(WINSIZE_WIDTH - editBack->getContentSize().width / 1.5, WINSIZE_HEIGHT / 8));
 	m_BackEditBox = Menu::create(editBack, NULL);
 	m_BackEditBox->setPosition(Point::ZERO);
 	this->addChild(m_BackEditBox, 1);
@@ -308,6 +309,7 @@ void InfoLayer::editBoxReturn(cocos2d::ui::EditBox* editBox)
 			pLabel->removeFromParent();
 		}
 	}
+	m_CourseContentsLabels.clear();
 
 	m_AllCourseBackMenu->setVisible(false);
 	m_MyCourseBackMenu->setVisible(false);
@@ -324,12 +326,12 @@ void InfoLayer::editBoxReturn(cocos2d::ui::EditBox* editBox)
 		int count = 0;
 		int spaceY = 30;
 		Point firstPos;
-		firstPos.x = WINSIZE_WIDTH / 6;
+		firstPos.x = WINSIZE_WIDTH / 8;
 		firstPos.y = WINSIZE_HEIGHT - 20;
 
 		while (getline(ss, token, ','))
 		{
-			Label* tmpLabel = Label::createWithSystemFont(token, "noto sans korean bold", 13);
+			Label* tmpLabel = Label::createWithSystemFont(token, "noto sans korean bold", 17);
 			tmpLabel->setAnchorPoint(Point::ZERO);
 			this->addChild(tmpLabel);
 			m_CourseContentsLabels.push_back(tmpLabel);
@@ -338,27 +340,44 @@ void InfoLayer::editBoxReturn(cocos2d::ui::EditBox* editBox)
 		for (auto pLabel : m_CourseContentsLabels)
 		{
 
-			if (count % 4 == 0)
+			if (count % 3 == 0)
 			{
-				if (count == 0)
-					firstPos.x = WINSIZE_WIDTH / 6;
-				else if (count == 12)
-					firstPos.x = WINSIZE_WIDTH / 6 + 200;
-				else if (count == 24)
-					firstPos.x = WINSIZE_WIDTH / 6 + 400;
+				if (count >= 0 && count < 45)
+				{
+					firstPos.x = WINSIZE_WIDTH / 8;
+				}
+				else if (count >= 45 && count < 90)
+				{
+					firstPos.x = WINSIZE_WIDTH / 8 + 250;
+					if (count == 45)
+					{
+						firstPos.y = WINSIZE_HEIGHT - 20;
+					}
+
+				}	
+				else
+				{
+					firstPos.x = WINSIZE_WIDTH / 8 + 500;
+					if (count == 90)
+					{
+						firstPos.y = WINSIZE_HEIGHT - 20;
+					}
+
+				}
 
 				firstPos.y -= spaceY;
 				pLabel->setPosition(firstPos.x, firstPos.y);
 			}
-			else if (count % 4 == 1)
+			else if (count % 3 == 1)
 			{
-				firstPos.x += 20;
+				firstPos.x += 35;
 				pLabel->setPosition(firstPos.x, firstPos.y);
 			}
 			else
 			{
 				firstPos.x += 30;
-				pLabel->setPosition(firstPos.x, firstPos.y);
+				float posY = firstPos.y - 25;
+				pLabel->setPosition(firstPos.x, posY);
 			}
 		
 			++count;
@@ -393,8 +412,10 @@ void InfoLayer::editBoxBackEvent(cocos2d::Ref* sender)
 		}
 	}
 
+	m_ChooseCourse->setVisible(false);
 	m_BackEditBox->setVisible(false);
 	m_AllCourseMenu->setVisible(true);
 	m_MyCourseMenu->setVisible(true);
+	m_BackMenu->setVisible(true);
 }
 
