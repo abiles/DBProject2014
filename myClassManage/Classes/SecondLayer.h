@@ -2,7 +2,7 @@
 #include "cocos2d.h"
 
 class InfoLayer;
-
+class SearchLayer;
 class SecondLayer : public cocos2d::LayerColor
 {
 public:
@@ -20,5 +20,6 @@ private:
 	cocos2d::Menu*		  m_SearchMenu = nullptr;
 	cocos2d::Menu*		  m_BackMenu = nullptr;
 	InfoLayer*			  m_InfoLayer = nullptr;
+	SearchLayer*		  m_SearchLayer = nullptr;
 
 };

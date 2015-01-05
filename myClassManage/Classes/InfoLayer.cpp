@@ -67,7 +67,7 @@ bool InfoLayer::init()
 
 	//과목 선택용 editbox
 	m_ChooseCourse = ui::EditBox::create(Size(300, 100), "SpriteToolEditBox.png");
-	m_ChooseCourse->setScale(0.5f);
+	m_ChooseCourse->setScale(0.7f);
 	editBoxInit();
 	this->addChild(m_ChooseCourse, 1);
 	m_ChooseCourse->setVisible(false);
@@ -115,7 +115,7 @@ void InfoLayer::showAllCourseEvent(cocos2d::Ref* sender)
 	int count = 0;
 	int spaceY = 30;
 	Point firstPos;
-	firstPos.x = WINSIZE_WIDTH/3;
+	firstPos.x = WINSIZE_WIDTH - 200;
 	firstPos.y = WINSIZE_HEIGHT - 20;
 
 	while (getline(ss, token, ','))
@@ -184,7 +184,7 @@ void InfoLayer::showMyCourseEvent(cocos2d::Ref* sender)
 	int count = 0;
 	int spaceY = 30;
 	Point firstPos;
-	firstPos.x = WINSIZE_WIDTH / 3;
+	firstPos.x = WINSIZE_WIDTH - 200;
 	firstPos.y = WINSIZE_HEIGHT - 20;
 
 	while (getline(ss, token, ','))
@@ -326,7 +326,7 @@ void InfoLayer::editBoxReturn(cocos2d::ui::EditBox* editBox)
 		int count = 0;
 		int spaceY = 30;
 		Point firstPos;
-		firstPos.x = WINSIZE_WIDTH / 8;
+		firstPos.x = WINSIZE_WIDTH - 200;
 		firstPos.y = WINSIZE_HEIGHT - 20;
 
 		while (getline(ss, token, ','))

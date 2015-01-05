@@ -301,7 +301,94 @@ bool DBManager::getContentsByCourseId(const SQLWCHAR* courseId, OUT std::string*
 
 	courseInfo->pop_back();
 
-	if (m_HStmt) SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
+	if (hStmt) SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
+
+	return true;
+}
+
+bool DBManager::getInfoBySearchInput(const SQLWCHAR* searchInput, OUT std::string* courseInfo)
+{
+	int ret = 0;
+	SQLWCHAR query[500] = { 0, };
+
+	SQLHSTMT hStmt = nullptr;
+	if (SQLAllocHandle(SQL_HANDLE_STMT, m_HDbc, &hStmt) != SQL_SUCCESS)
+		return false;
+
+	wsprintf(query, L"select c.courseName, p.professorName, c.year, c.semester, con.week, con.substance From content con "
+			 L"join professor_lecture_course pl ON pl.course_courseId = con.course_courseId "
+			 L"join professor p ON pl.Professor_ProfessorId = p.professorId "
+			 L"join course c On c.courseId = con.course_courseId "
+			 L"where substance like \"%%%s%%\"", searchInput);
+	ret = SQLExecDirect(hStmt, query, SQL_NTS);
+	if (ret == SQL_NO_DATA || ret == SQL_ERROR)
+		return false;
+
+	ret = SQLFetch(hStmt);
+	if (ret == SQL_NO_DATA)
+		return false;
+
+	while (ret == SQL_SUCCESS_WITH_INFO || ret == SQL_SUCCESS)
+	{
+		SQLWCHAR courseName[200] = { 0, };
+		SQLWCHAR professorName[200] = { 0, };
+		SQLWCHAR substance[200] = { 0, };
+		SQLLEN  week = 0, iWeekLen = 0, year = 0, iYearLen = 0, semester = 0, iSemesterLen = 0, iCourseNameLen = 0,
+				iProfessorNameLen = 0, iSubstanceLen = 0;
+
+		if (SQLGetData(hStmt, 1, SQL_C_WCHAR, &courseName, sizeof(courseName), &iCourseNameLen) == SQL_ERROR)
+			return false;
+		if (SQLGetData(hStmt, 2, SQL_C_WCHAR, &professorName, sizeof(professorName), &iProfessorNameLen) == SQL_ERROR)
+			return false;
+		if (SQLGetData(hStmt, 3, SQL_C_ULONG, &year, 0, &iYearLen) == SQL_ERROR)
+			return false;
+		if (SQLGetData(hStmt, 4, SQL_C_ULONG, &semester, 0, &iSemesterLen) == SQL_ERROR)
+			return false;
+		if (SQLGetData(hStmt, 5, SQL_C_ULONG, &week, 0, &iWeekLen) == SQL_ERROR)
+			return false;
+		if (SQLGetData(hStmt, 6, SQL_C_WCHAR, &substance, sizeof(substance), &iSubstanceLen) == SQL_ERROR)
+			return false;
+
+
+		char ch[260];
+		char DefChar = ' ';
+		WideCharToMultiByte(CP_ACP, 0, courseName, -1, ch, 260, &DefChar, NULL);
+		std::string courseNameStr(ch);
+		*courseInfo += courseNameStr;
+		*courseInfo += ',';
+
+		char proName[260];
+		char proChar = ' ';
+		WideCharToMultiByte(CP_ACP, 0, professorName, -1, proName, 260, &proChar, NULL);
+		std::string proNameStr(proName);
+		*courseInfo += proNameStr;
+		*courseInfo += ',';
+
+		std::string yearStr = std::to_string(year);
+		*courseInfo += yearStr;
+		*courseInfo += ',';
+
+		std::string semesterStr = std::to_string(semester);
+		*courseInfo += semesterStr;
+		*courseInfo += ',';
+
+		std::string weekStr = std::to_string(week);
+		*courseInfo += weekStr;
+		*courseInfo += ',';
+
+		char sub[260];
+		char subChar = ' ';
+		WideCharToMultiByte(CP_ACP, 0, substance, -1, sub, 260, &subChar, NULL);
+		std::string substanceStr(sub);
+		*courseInfo += substanceStr;
+		*courseInfo += ',';
+
+		ret = SQLFetch(hStmt);
+	}
+
+	courseInfo->pop_back();
+
+	if (hStmt) SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
 
 	return true;
 }

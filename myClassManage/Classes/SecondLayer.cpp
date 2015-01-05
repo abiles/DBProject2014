@@ -3,6 +3,7 @@
 #include "util.h"
 #include "DBManager.h"
 #include "InfoLayer.h"
+#include "SearchLayer.h"
 
 USING_NS_CC;
 
@@ -55,6 +56,12 @@ bool SecondLayer::init()
 	m_InfoLayer->setPosition(Point::ZERO);
 	m_InfoLayer->setVisible(false);
 
+	//searchlayer µî·Ï
+	m_SearchLayer = SearchLayer::create();
+	this->addChild(m_SearchLayer, 2);
+	m_SearchLayer->setPosition(Point::ZERO);
+	m_SearchLayer->setVisible(false);
+
 	return true;
 }
 
@@ -74,7 +81,7 @@ void SecondLayer::updateMenuEvent(Ref* pSender)
 
 void SecondLayer::searchMenuEvent(Ref* pSender)
 {
-
+	m_SearchLayer->setVisible(true);
 }
 
 void SecondLayer::backMenuEvent(cocos2d::Ref* psender)

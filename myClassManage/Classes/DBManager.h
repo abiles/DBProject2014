@@ -29,6 +29,7 @@ public:
 	bool			  loadAllCourseInfo(OUT std::string* courseInfo);
 	bool			  loadUserCourseInfo(const SQLWCHAR* inputId, OUT std::string* courseInfo);
 	bool			  getContentsByCourseId(const SQLWCHAR* courseId, OUT std::string* courseInfo);
+	bool			  getInfoBySearchInput(const SQLWCHAR* searchInput, OUT std::string* courseInfo);
 	void			  setUserId(const SQLWCHAR* userId);
 	SQLWCHAR*		  getUserId();
 
