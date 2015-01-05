@@ -14,6 +14,8 @@ enum Zorder
 	ZORDER_END,
 };
 
+
+class SecondLayer;
 class ClassManage : public cocos2d::Layer, public cocos2d::ui::EditBoxDelegate
 {
 public:
@@ -41,6 +43,7 @@ private:
 	cocos2d::Label*       m_ResisterResultLabel = nullptr;
 	cocos2d::Menu*		  m_ResistrationMenu = nullptr;
 	cocos2d::Menu*		  m_FirstToSecondMenu = nullptr;
+	SecondLayer*		  m_SecondLayer = nullptr;
 
 
 };

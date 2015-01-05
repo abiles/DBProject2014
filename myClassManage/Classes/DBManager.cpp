@@ -112,4 +112,61 @@ bool DBManager::resisterNewUserId(const SQLWCHAR* inputId)
 		return false;
 }
 
+bool DBManager::loadAllCourseInfo(OUT std::string* courseInfo)
+{
+	int ret = 0;
+	SQLWCHAR query[300] = { 0, };
+
+	SQLHSTMT hStmt = nullptr;
+	if (SQLAllocHandle(SQL_HANDLE_STMT, m_HDbc, &hStmt) != SQL_SUCCESS)
+		return false;
+	
+	wsprintf(query, L"SELECT * FROM course");
+	ret = SQLExecDirect(hStmt, query, SQL_NTS);
+	if (ret == SQL_NO_DATA || ret == SQL_ERROR)
+		return false;
+	ret = SQLFetch(hStmt);
+
+	while (ret == SQL_SUCCESS_WITH_INFO || ret == SQL_SUCCESS)
+	{
+
+		SQLWCHAR courseName[200] = { 0, };
+		SQLLEN id = 0, iIdLen = 0, year = 0, iYearLen = 0, semester = 0, iSemesterLen = 0, iCourseLen = 0;
+
+		if (SQLGetData(hStmt, 1, SQL_C_ULONG, &id, 0, &iIdLen) == SQL_ERROR)
+			return false;
+		if (SQLGetData(hStmt, 2, SQL_C_WCHAR, courseName, sizeof(courseName), &iCourseLen) == SQL_ERROR)
+			return false;
+		if (SQLGetData(hStmt, 3, SQL_C_ULONG, &year, 0, &iYearLen) == SQL_ERROR)
+			return false;
+		if (SQLGetData(hStmt, 4, SQL_C_ULONG, &semester, 0, &iSemesterLen) == SQL_ERROR)
+			return false;
+
+		std::string idStr = std::to_string(id);
+		*courseInfo += idStr;
+		*courseInfo += ',';
+
+		char ch[260];
+		char DefChar = ' ';
+		WideCharToMultiByte(CP_ACP, 0, courseName, -1, ch, 260, &DefChar, NULL);
+		std::string courseString(ch);
+		*courseInfo += courseString;
+		*courseInfo += ',';
+
+		std::string yearStr = std::to_string(year);
+		*courseInfo += yearStr;
+		*courseInfo += ',';
+
+		std::string semesterStr = std::to_string(semester);
+		*courseInfo += semesterStr;
+		*courseInfo += ',';
+
+		ret = SQLFetch(hStmt);
+	}
+
+	courseInfo->pop_back();
+
+	return true;
+}
+
 

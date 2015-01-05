@@ -1,2 +1,4 @@
-#include "DBManager.h"
+
+#define WINSIZE_WIDTH 1024
+#define WINSIZE_HEIGHT 576
 

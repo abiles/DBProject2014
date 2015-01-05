@@ -10,13 +10,13 @@ className : DBManager.h
 
 #include <sql.h>
 #include <sqlext.h>
+#include <string>
 
 #define GET_DBMANAGER() DBManager::getInstance()
 
 class DBManager
 {
 public:
-
 
 	static DBManager* getInstance();
 	static void		  releaseInstance();
@@ -26,6 +26,8 @@ public:
 
 	bool			  isInputIDExist(const SQLWCHAR* inputId);
 	bool			  resisterNewUserId(const SQLWCHAR* inputId);
+	bool			  loadAllCourseInfo(OUT std::string* courseInfo);
+	bool			  loadUserCourseInfo(const SQLWCHAR* inputId);
 
 	
 

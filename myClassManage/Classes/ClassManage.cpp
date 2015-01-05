@@ -2,7 +2,7 @@
 #include "ClassManage.h"
 #include "DBManager.h"
 #include "util.h"
-
+#include "SecondLayer.h"
 
 USING_NS_CC;
 
@@ -16,11 +16,9 @@ Scene* ClassManage::createScene()
 
 bool ClassManage::init()
 {
-	if ( !Layer::init() )
-	{
+	if (!Layer::init())
 		return false;
-	}
-
+	
 	//DB 연결
 	if (!GET_DBMANAGER()->connectToDB())
 		return false;
@@ -28,7 +26,7 @@ bool ClassManage::init()
 	
 	//크기 구해놓기
 	m_VisibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	initLabels();
 
@@ -36,6 +34,12 @@ bool ClassManage::init()
 	m_EditBox = ui::EditBox::create(Size(300, 100), "SpriteToolEditBox.png");
 	editBoxInit();
 	this->addChild(m_EditBox, FISRT_LAYER);
+
+	//secondLayer init
+	m_SecondLayer = SecondLayer::create();
+	this->addChild(m_SecondLayer, SECOND_LAYER);
+	m_SecondLayer->setPosition(origin);
+	m_SecondLayer->setVisible(false);
 
 	return true;
 }
@@ -74,6 +78,10 @@ void ClassManage::editBoxReturn(cocos2d::ui::EditBox* editBox)
 {
 	if (!editBox)
 		return;
+	m_FirstToSecondMenu->setVisible(false);
+	m_ResistrationMenu->setVisible(false);
+	m_ResisterInfoLabel->setVisible(false);
+	m_ResisterResultLabel->setVisible(false);
 
 	const char* tmpText = editBox->getText();
 	int len = strlen(tmpText);
@@ -81,16 +89,15 @@ void ClassManage::editBoxReturn(cocos2d::ui::EditBox* editBox)
 
 	if (GET_DBMANAGER()->isInputIDExist(m_UserId))
 	{
+		//존재하는 ID 일때
 		m_FirstToSecondMenu->setVisible(true);
-		return;
 	}
 	else
 	{
 		//존재하지 않는 ID일 때
-		m_FirstToSecondMenu->setVisible(false);
 		m_ResisterInfoLabel->setVisible(true);
 		m_ResistrationMenu->setVisible(true);
-		return;
+		
 	}
 }
 
@@ -171,4 +178,5 @@ void ClassManage::initLabels()
 void ClassManage::firstToSecondMenuEvent(cocos2d::Ref* pSender)
 {
 	//다음 레이어를 소환하는 메뉴!
+	m_SecondLayer->setVisible(true);
 }

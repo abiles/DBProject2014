@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "AppDelegate.h"
 #include "ClassManage.h"
+#include "util.h"
 
 USING_NS_CC;
 
-#define WINSIZE_WIDTH 1024
-#define WINSIZE_HEIGHT 576
+
 
 AppDelegate::AppDelegate() {
 
