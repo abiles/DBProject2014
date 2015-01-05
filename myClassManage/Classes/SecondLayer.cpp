@@ -39,6 +39,15 @@ bool SecondLayer::init()
 	m_SearchMenu->setPosition(Point::ZERO);
 	this->addChild(m_SearchMenu, 1);
 
+	auto backMenu = MenuItemImage::create("back.png", "back.png",
+											CC_CALLBACK_1(SecondLayer::backMenuEvent, this));
+
+	backMenu->setScale(0.7f);
+	backMenu->setPosition(Point(WINSIZE_WIDTH  - backMenu->getContentSize().width/2, WINSIZE_HEIGHT / 8));
+
+	m_BackMenu = Menu::create(backMenu, NULL);
+	m_BackMenu->setPosition(Point::ZERO);
+	this->addChild(m_BackMenu, 1);
 
 	//infolayer µî·Ï
 	m_InfoLayer = InfoLayer::create();
@@ -66,4 +75,9 @@ void SecondLayer::updateMenuEvent(Ref* pSender)
 void SecondLayer::searchMenuEvent(Ref* pSender)
 {
 
+}
+
+void SecondLayer::backMenuEvent(cocos2d::Ref* psender)
+{
+	setVisible(false);
 }

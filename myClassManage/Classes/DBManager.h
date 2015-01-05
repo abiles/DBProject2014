@@ -27,7 +27,10 @@ public:
 	bool			  isInputIDExist(const SQLWCHAR* inputId);
 	bool			  resisterNewUserId(const SQLWCHAR* inputId);
 	bool			  loadAllCourseInfo(OUT std::string* courseInfo);
-	bool			  loadUserCourseInfo(const SQLWCHAR* inputId);
+	bool			  loadUserCourseInfo(const SQLWCHAR* inputId, OUT std::string* courseInfo);
+	bool			  getContentsByCourseId(const SQLWCHAR* courseId, OUT std::string* courseInfo);
+	void			  setUserId(const SQLWCHAR* userId);
+	SQLWCHAR*		  getUserId();
 
 	
 
@@ -36,6 +39,7 @@ private:
 	SQLHENV		      m_HEnv = nullptr;
 	SQLHDBC		      m_HDbc = nullptr;
 	SQLHSTMT	      m_HStmt = nullptr;
+	SQLWCHAR		  m_UserId[100];
 
 	DBManager();
 	~DBManager();

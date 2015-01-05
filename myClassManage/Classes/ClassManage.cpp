@@ -22,7 +22,7 @@ bool ClassManage::init()
 	//DB 연결
 	if (!GET_DBMANAGER()->connectToDB())
 		return false;
-	wmemset(m_UserId, 0, sizeof(m_UserId));
+	memset(m_UserId, 0, sizeof(m_UserId));
 	
 	//크기 구해놓기
 	m_VisibleSize = Director::getInstance()->getVisibleSize();
@@ -97,8 +97,9 @@ void ClassManage::editBoxReturn(cocos2d::ui::EditBox* editBox)
 		//존재하지 않는 ID일 때
 		m_ResisterInfoLabel->setVisible(true);
 		m_ResistrationMenu->setVisible(true);
-		
 	}
+
+	GET_DBMANAGER()->setUserId(m_UserId);
 }
 
 void ClassManage::resisterMenuEvent(cocos2d::Ref* pSender)
